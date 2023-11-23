@@ -1,6 +1,6 @@
-# welcome sir , i have some i have some query
+# welcome sir , i have some query
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+When you click on the joint, is the status saved for each user ?  
 
 ## head line 
 
