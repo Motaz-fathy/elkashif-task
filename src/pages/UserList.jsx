@@ -13,13 +13,14 @@ function UserList() {
   const [switcher , setSwitcher] = useState("detalis")
   const [searchText, setSearchText] = React.useState('');
   const [searchResults, setSearchResults] = React.useState([]);
-  
-    const handleSearchSubmit = () => {
-      const results = users.filter(item =>
-        item?.name?.toLowerCase().includes(searchText.toLowerCase())
-      );
-      setSearchResults(results);
-    };
+  const [errors, setErrors] = useState({});
+
+  const handleSearchSubmit = () => {
+    const results = users.filter(item =>
+      item?.name?.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setSearchResults(results);
+  };
 
 
   const handleDetails = (divName) => {
@@ -38,10 +39,31 @@ function UserList() {
   const handleUserClick = (user) => {
     setSelectedUser(user);
   };
-
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewUser(prev => ({ ...prev, [name]: value }));
+    const updatedUser = { ...newUser, [name]: value };
+    const updatedErrors = { ...errors };
+
+    // Validation logic 
+    if (name === 'name' && value.trim() === '' ) {
+      updatedErrors[name] = 'Name is required';
+      
+    } else if (name === 'email' && !isValidEmail(value) ) {
+      updatedErrors[name] = 'Invalid email address';
+      
+    } else if (name === 'phone' && value.length < 11 ) {
+      updatedErrors[name] = 'phone must be at least 11 number ';
+      
+    } else {
+      delete updatedErrors[name];
+    }
+
+    setNewUser(updatedUser);
+    setErrors(updatedErrors);
   };
 
   const handleSubmit = (e) => {
@@ -106,10 +128,11 @@ function UserList() {
               <li key={person.id} className="flex justify-between gap-x-6 py-5 cursor-pointer bg-gray-100" onClick={() => handleUserClick(person)}>
                 <div className="flex min-w-0 gap-x-4">
                   <div className="h-12 w-12 flex-none rounded-full bg-gray-200" > </div>
-                  <div className="min-w-0 flex-auto">
+                  <div className="min-w-0 flex flex-col items-start">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.phone}</p>
+                    <p className="hidden max-sm:block text-xs leading-5 text-gray-500 ">{isFavorite && selectedUser && selectedUser.id === person.id && <span> <FavoriteIcon /> </span>}</p>
                   </div>
                 </div>
                 <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
@@ -136,7 +159,7 @@ function UserList() {
          </div>
          {
             switcher === "detalis" ? <UserDetails selectedUser={selectedUser} isFavorite={isFavorite} setIsFavorite={setIsFavorite} className="w-full " /> : 
-              <UserAddForm handleSubmit={handleSubmit} newUser={newUser}  handleInputChange={handleInputChange} className="w-full"/> 
+              <UserAddForm errors={errors} handleSubmit={handleSubmit} newUser={newUser}  handleInputChange={handleInputChange} className="w-full"/> 
 
          }
          
