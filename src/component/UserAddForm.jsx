@@ -1,20 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "../utilts/Button";
 
-export const UserAddForm = ({ handleSubmit, newUser, handleInputChange }) => {
+import { ToastContainer, toast } from 'react-toastify';
+
+export const UserAddForm = ({ handleSubmit, newUser, handleInputChange , errors  }) => {
+
+  const [disable , setDisable] = useState(true)
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  useEffect(() => {
+    if(newUser?.name.trim() !== '' &&  newUser?.phone.trim() !== ''  && isValidEmail(newUser?.email) ) {
+     setDisable(false)
+    } else {
+      setDisable(true)
+    }
+    
+  } , [newUser]) 
 
   return (
     <div>
       <h1 className="text-[24px] font-[500] text-[#8a8a8a]">add new user </h1>
-
-      <div class=" w-[100%] h-auto max-w-sm bg-white border border-gray-200 rounded-lg shadow">
+     <ToastContainer />
+      <div className=" w-[100%] h-auto max-w-sm bg-white border border-gray-200 rounded-lg shadow">
         <form
-          class="bg-white  rounded px-10 pt-6 pb-8 mb-4 "
+          className="bg-white  rounded px-10 pt-6 pb-8 mb-4 "
           onSubmit={handleSubmit}
         >
-          <div class=" flex flex-col items-start">
+          <div className=" flex flex-col items-start">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              for="username"
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="username"
             >
               name
             </label>
@@ -27,11 +44,12 @@ export const UserAddForm = ({ handleSubmit, newUser, handleInputChange }) => {
               value={newUser.name}
               onChange={handleInputChange}
             />
+            {!!errors?.name && <span className="text-red-400 text-[12px]">{errors?.name}</span>}
           </div>
-          <div class="mb-4 flex flex-col items-start">
+          <div className="mb-4 flex flex-col items-start">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              for="email"
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
             >
               email
             </label>
@@ -44,12 +62,13 @@ export const UserAddForm = ({ handleSubmit, newUser, handleInputChange }) => {
               value={newUser.email}
               onChange={handleInputChange}
             />
+            {!!errors?.email && <span className="text-red-400 text-[12px]">{errors?.email}</span>}
           </div>
 
-          <div class="mb-4 flex flex-col items-start">
+          <div className="mb-4 flex flex-col items-start">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              for="phone"
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="phone"
             >
               phone
             </label>
@@ -62,14 +81,20 @@ export const UserAddForm = ({ handleSubmit, newUser, handleInputChange }) => {
               value={newUser.phone}
               onChange={handleInputChange}
             />
+            {!!errors?.phone && <span className="text-red-400 text-[12px]">{errors?.phone}</span>}
           </div>
-          <div class="flex items-center justify-center">
-            <button
-              class="bg-[#e36c0b]  text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
+          <div className="flex items-center justify-center">
+            <Button
+            onClick={handleSubmit}
+            disabled={disable}
+            width={"50%"}
+            height={"40px"}
+            className={`${disable === true ? 'bg-[#eda061]' : ' bg-[#e36c0b]'}  text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
+            type="submit"
             >
-              add user
-            </button>
+             add user
+            </Button>
+           
           </div>
         </form>
       </div>
